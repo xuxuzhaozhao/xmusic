@@ -578,8 +578,8 @@ button:focus-visible, input:focus-visible {
 @media (min-width: 640px) {
   body { display: flex; align-items: center; justify-content: center; }
   .app {
-    height: 92vh;
-    max-height: 900px;
+    height: 100vh;
+    max-height: 100vh;
     border-radius: 40px;
     overflow: hidden;
     box-shadow: 0 40px 100px rgba(0,0,0,0.6);

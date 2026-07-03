@@ -161,7 +161,6 @@
     closeQueueBtn: $("closeQueueBtn"),
 
     toast: $("toast"),
-    installChip: $("installChip"),
   };
 
   /* ============ 工具函数 ============ */
@@ -673,23 +672,7 @@
     });
   }
 
-  let deferredInstallEvent = null;
-  window.addEventListener("beforeinstallprompt", (e) => {
-    e.preventDefault();
-    deferredInstallEvent = e;
-    els.installChip.hidden = false;
-  });
-  els.installChip.addEventListener("click", async () => {
-    if (!deferredInstallEvent) return;
-    deferredInstallEvent.prompt();
-    await deferredInstallEvent.userChoice;
-    deferredInstallEvent = null;
-    els.installChip.hidden = true;
-  });
-  window.addEventListener("appinstalled", () => {
-    els.installChip.hidden = true;
-    toast("已安装到主屏幕");
-  });
+  
 
   /* ============ 媒体会话（锁屏/控制中心）============ */
   if ("mediaSession" in navigator) {
