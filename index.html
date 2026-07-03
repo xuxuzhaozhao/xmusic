@@ -125,7 +125,13 @@
     </button>
   </nav>
 
-  <input type="file" id="fileInput" accept="audio/*" multiple hidden />
+  <input
+    type="file"
+    id="fileInput"
+    class="visually-hidden-input"
+    accept="audio/*,.mp3,.m4a,.aac,.wav,.flac,.ogg,.oga,.wma,.aiff,.caf,.opus"
+    multiple
+  />
 </div>
 
 <!-- ============ 全屏播放器 ============ -->
@@ -204,7 +210,6 @@
 <div class="toast" id="toast"></div>
 
 <!-- ============ 安装提示 ============ -->
-
 
 <script src="app.js"></script>
 </body>

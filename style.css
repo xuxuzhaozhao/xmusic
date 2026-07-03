@@ -30,6 +30,7 @@
 
 html, body {
   height: 100%;
+  height: 100dvh; /* 修正 iOS 独立 PWA 下 100% 高度与可视视口不一致导致的底部空白 */
   margin: 0;
   background: var(--void);
   color: var(--text-1);
@@ -110,6 +111,7 @@ svg { width: 22px; height: 22px; fill: currentColor; display: block; }
   position: relative;
   z-index: 1;
   height: 100%;
+  height: 100dvh;
   max-width: 560px;
   margin: 0 auto;
   display: flex;
@@ -568,6 +570,20 @@ svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 }
 .install-chip svg { width: 15px; height: 15px; }
 
+/* 视觉隐藏但保留可交互性：iOS Safari 对 display:none 的
+   <input type=file> 有时不会弹出选择面板，故用此方式代替 [hidden] */
+.visually-hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ================= 无障碍焦点 ================= */
 button:focus-visible, input:focus-visible {
   outline: 2px solid var(--accent);
@@ -578,8 +594,8 @@ button:focus-visible, input:focus-visible {
 @media (min-width: 640px) {
   body { display: flex; align-items: center; justify-content: center; }
   .app {
-    height: 100vh;
-    max-height: 100vh;
+    height: 92vh;
+    max-height: 900px;
     border-radius: 40px;
     overflow: hidden;
     box-shadow: 0 40px 100px rgba(0,0,0,0.6);
