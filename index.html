@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<title>琉光 · Glass Music</title>
+<meta name="description" content="本地音乐播放器 · 玻璃拟态 iOS 风格 · 支持离线安装" />
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#0B0A14" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="琉光" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" href="icons/icon-192.png" />
+
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- 动态玻璃背景光斑 -->
+<div class="bg-layer" aria-hidden="true">
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
+  <div class="blob blob-c"></div>
+  <div class="bg-noise"></div>
+</div>
+
+<div class="app" id="app">
+
+  <!-- ============ 顶部栏 ============ -->
+  <header class="topbar glass" id="topbar">
+    <div class="topbar-title" id="viewTitle">听现在</div>
+    <button class="icon-btn" id="searchToggleBtn" aria-label="搜索">
+      <svg viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 015.916 12.132l4.226 4.225a1 1 0 01-1.415 1.415l-4.225-4.226A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"/></svg>
+    </button>
+  </header>
+
+  <!-- ============ 主内容 ============ -->
+  <main class="views" id="views">
+
+    <!-- 听现在 -->
+    <section class="view active" id="view-now" data-title="听现在">
+      <div class="section-block">
+        <h2 class="section-heading">最近播放</h2>
+        <div class="hscroll" id="recentRow">
+          <p class="empty-hint" id="recentEmpty">还没有播放记录，去「资料库」添加一些音乐吧</p>
+        </div>
+      </div>
+      <div class="section-block">
+        <h2 class="section-heading">随机重温</h2>
+        <div class="grid-cards" id="shuffleGrid"></div>
+      </div>
+    </section>
+
+    <!-- 资料库 -->
+    <section class="view" id="view-library" data-title="资料库">
+      <div class="library-toolbar">
+        <div class="track-count" id="trackCount">0 首歌曲</div>
+        <div class="toolbar-actions">
+          <button class="pill-btn" id="playAllBtn">
+            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            播放全部
+          </button>
+          <button class="pill-btn pill-accent" id="importBtn">
+            <svg viewBox="0 0 24 24"><path d="M12 4a1 1 0 011 1v6h6a1 1 0 110 2h-6v6a1 1 0 11-2 0v-6H5a1 1 0 110-2h6V5a1 1 0 011-1z"/></svg>
+            添加音乐
+          </button>
+        </div>
+      </div>
+      <ul class="track-list" id="libraryList"></ul>
+      <div class="empty-state" id="libraryEmpty">
+        <div class="empty-glyph">♪</div>
+        <p>资料库还是空的</p>
+        <span>点按「添加音乐」，从这台设备导入音频文件</span>
+        <button class="pill-btn pill-accent" id="importBtnBig">添加音乐</button>
+      </div>
+    </section>
+
+    <!-- 搜索 -->
+    <section class="view" id="view-search" data-title="搜索">
+      <div class="search-field glass">
+        <svg viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 015.916 12.132l4.226 4.225a1 1 0 01-1.415 1.415l-4.225-4.226A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"/></svg>
+        <input type="search" id="searchInput" placeholder="歌曲、艺人" autocomplete="off" />
+      </div>
+      <ul class="track-list" id="searchResults"></ul>
+      <p class="empty-hint" id="searchEmpty">输入以搜索资料库</p>
+    </section>
+
+  </main>
+
+  <!-- ============ 迷你播放条 ============ -->
+  <button class="mini-player glass" id="miniPlayer" hidden>
+    <div class="mini-art" id="miniArt"></div>
+    <div class="mini-meta">
+      <div class="mini-title" id="miniTitle">—</div>
+      <div class="mini-artist" id="miniArtist">—</div>
+    </div>
+    <div class="mini-controls">
+      <button class="icon-btn" id="miniPlayBtn" aria-label="播放/暂停">
+        <svg id="miniPlayIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="icon-btn" id="miniNextBtn" aria-label="下一首">
+        <svg viewBox="0 0 24 24"><path d="M6 5l10 7-10 7V5zm12 0h2v14h-2V5z"/></svg>
+      </button>
+    </div>
+    <div class="mini-progress"><div class="mini-progress-fill" id="miniProgressFill"></div></div>
+  </button>
+
+  <!-- ============ 底部标签栏 ============ -->
+  <nav class="tabbar glass" id="tabbar">
+    <button class="tab-btn active" data-view="view-now">
+      <svg viewBox="0 0 24 24"><path d="M12 3l9 8h-3v9h-5v-6H11v6H6v-9H3l9-8z"/></svg>
+      <span>听现在</span>
+    </button>
+    <button class="tab-btn" data-view="view-library">
+      <svg viewBox="0 0 24 24"><path d="M4 4h4v16H4V4zm6 4h4v12h-4V8zm6-6h4v18h-4V2z"/></svg>
+      <span>资料库</span>
+    </button>
+    <button class="tab-btn" data-view="view-search">
+      <svg viewBox="0 0 24 24"><path d="M10.5 3a7.5 7.5 0 015.916 12.132l4.226 4.225a1 1 0 01-1.415 1.415l-4.225-4.226A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z"/></svg>
+      <span>搜索</span>
+    </button>
+  </nav>
+
+  <input type="file" id="fileInput" accept="audio/*" multiple hidden />
+</div>
+
+<!-- ============ 全屏播放器 ============ -->
+<div class="player-sheet" id="playerSheet" aria-hidden="true">
+  <div class="player-glass glass">
+    <div class="sheet-grabber" id="sheetGrabber"></div>
+
+    <div class="player-header">
+      <button class="icon-btn" id="collapseBtn" aria-label="收起">
+        <svg viewBox="0 0 24 24"><path d="M12 15.5L4.5 8l1.4-1.4L12 12.7l6.1-6.1L19.5 8z"/></svg>
+      </button>
+      <div class="player-header-label">正在播放</div>
+      <button class="icon-btn" id="queueBtn" aria-label="播放队列">
+        <svg viewBox="0 0 24 24"><path d="M4 6h16v2H4V6zm0 5h16v2H4v-2zm0 5h10v2H4v-2z"/></svg>
+      </button>
+    </div>
+
+    <div class="player-art-wrap">
+      <div class="player-art" id="playerArt"></div>
+    </div>
+
+    <div class="player-meta">
+      <div class="player-title" id="playerTitle">未选择歌曲</div>
+      <div class="player-artist" id="playerArtist">—</div>
+    </div>
+
+    <div class="progress-row">
+      <input type="range" id="seekSlider" class="seek-slider" min="0" max="1000" value="0" />
+      <div class="time-row">
+        <span id="timeCurrent">0:00</span>
+        <span id="timeDuration">0:00</span>
+      </div>
+    </div>
+
+    <div class="transport-row">
+      <button class="icon-btn transport-secondary" id="shuffleBtn" aria-label="随机播放">
+        <svg viewBox="0 0 24 24"><path d="M4 6h3.5l7 12H18v-2h-2.5l-7-12H4v2zm14 10v3l4-3.5L18 12v2h-1.6l-2.1-3.6 1.2-2L18 11V9l4 3.5L18 16zm-2.9-8.9L18 5v2h-1.6l-1.3 2.3L14 7l1.1-1.9z"/></svg>
+      </button>
+      <button class="icon-btn transport-secondary" id="prevBtn" aria-label="上一首">
+        <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6V6zm3.5 6L18 6v12l-8.5-6z"/></svg>
+      </button>
+      <button class="play-btn" id="playBtn" aria-label="播放/暂停">
+        <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="icon-btn transport-secondary" id="nextBtn" aria-label="下一首">
+        <svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2V6zM6 6l8.5 6L6 18V6z"/></svg>
+      </button>
+      <button class="icon-btn transport-secondary" id="repeatBtn" aria-label="重复播放">
+        <svg viewBox="0 0 24 24"><path d="M7 7h10v3l4-4-4-4v3H5v6h2V7zm10 10H7v-3l-4 4 4 4v-3h12v-6h-2v4z"/></svg>
+      </button>
+    </div>
+
+    <div class="volume-row">
+      <svg class="vol-icon" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4z"/></svg>
+      <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="80" />
+      <svg class="vol-icon" viewBox="0 0 24 24"><path d="M4 9v6h4l5 5V4L8 9H4zm11.5 3a4.5 4.5 0 00-2.5-4v8a4.5 4.5 0 002.5-4z"/></svg>
+    </div>
+  </div>
+</div>
+
+<!-- ============ 播放队列面板 ============ -->
+<div class="queue-sheet" id="queueSheet" aria-hidden="true">
+  <div class="queue-glass glass">
+    <div class="sheet-grabber"></div>
+    <div class="player-header">
+      <div class="player-header-label">接下来播放</div>
+      <button class="icon-btn" id="closeQueueBtn" aria-label="关闭">
+        <svg viewBox="0 0 24 24"><path d="M6.4 5L5 6.4l5.6 5.6L5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6L19 6.4 17.6 5 12 10.6z"/></svg>
+      </button>
+    </div>
+    <ul class="track-list" id="queueList"></ul>
+  </div>
+</div>
+
+<!-- ============ 轻提示 ============ -->
+<div class="toast" id="toast"></div>
+
+<!-- ============ 安装提示 ============ -->
+<button class="install-chip glass" id="installChip" hidden>
+  <svg viewBox="0 0 24 24"><path d="M12 3v10.6l3.3-3.3 1.4 1.4L12 17l-4.7-4.7 1.4-1.4 3.3 3.3V3h0zM5 19h14v2H5v-2z"/></svg>
+  安装到主屏幕
+</button>
+
+<script src="app.js"></script>
+</body>
+</html>
