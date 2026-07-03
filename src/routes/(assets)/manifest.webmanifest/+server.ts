@@ -1,0 +1,43 @@
+import { APP_DESCRIPTION_EN, APP_NAME_EN, APP_NAME_SHORT_EN } from '$lib/app-metadata.ts'
+import { THEME_PALLETTE_DARK } from '$lib/server/theme-colors.ts'
+
+export const prerender = true
+
+const manifest = {
+	short_name: APP_NAME_SHORT_EN,
+	name: APP_NAME_EN,
+	start_url: './library/tracks/',
+	scope: '../',
+	theme_color: THEME_PALLETTE_DARK.surface,
+	background_color: THEME_PALLETTE_DARK.surface,
+	display: 'standalone',
+	orientation: 'any',
+	description: APP_DESCRIPTION_EN,
+	icons: [
+		{
+			src: '/icons/raster-192.png',
+			sizes: '192x192',
+			type: 'image/png',
+			purpose: 'any',
+		},
+		{
+			src: '/icons/responsive.svg',
+			type: 'image/svg+xml',
+			sizes: 'any',
+			purpose: 'any',
+		},
+		{
+			src: '/icons/maskable.svg',
+			type: 'image/svg+xml',
+			sizes: 'any',
+			purpose: 'maskable',
+		},
+	],
+}
+
+export const GET = () =>
+	new Response(JSON.stringify(manifest), {
+		headers: {
+			'Content-Type': 'application/manifest+json',
+		},
+	})
