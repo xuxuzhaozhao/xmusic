@@ -686,7 +686,7 @@
     navigator.mediaSession.metadata = new MediaMetadata({
       title: track.title,
       artist: track.artist,
-      album: "琉光 · Glass Music",
+      album: "欣和 · Glass Music",
     });
   }
   audio.addEventListener("loadedmetadata", () => {

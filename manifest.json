@@ -1,6 +1,6 @@
 {
-  "name": "琉光 · Glass Music",
-  "short_name": "琉光音乐",
+  "name": "欣和 · Glass Music",
+  "short_name": "欣和音乐",
   "description": "本地音乐播放器 · 玻璃拟态 iOS 风格",
   "start_url": "./index.html",
   "scope": "./",
