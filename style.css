@@ -28,9 +28,17 @@
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+html {
+  background: var(--void);
+}
+
 html, body {
-  height: 100%;
-  height: 100dvh; /* 修正 iOS 独立 PWA 下 100% 高度与可视视口不一致导致的底部空白 */
+  /* 不再依赖 height:100%/100dvh 撑满屏幕——iOS 独立 PWA 下
+     dvh 对 Home Indicator 安全区的高度计算经常有偏差，
+     导致 body 实际绘制区域比真实屏幕矮一截，露出系统默认黑色背景。
+     改用 position:fixed + inset:0，直接钉满整个视口（含安全区），彻底消除底部黑边。 */
+  position: fixed;
+  inset: 0;
   margin: 0;
   background: var(--void);
   color: var(--text-1);
@@ -110,8 +118,7 @@ svg { width: 22px; height: 22px; fill: currentColor; display: block; }
 .app {
   position: relative;
   z-index: 1;
-  height: 100%;
-  height: 100dvh;
+  height: 100%; /* body 已用 position:fixed; inset:0 精确钉满全屏，此处直接继承即可 */
   max-width: 560px;
   margin: 0 auto;
   display: flex;
@@ -589,5 +596,3 @@ button:focus-visible, input:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
 }
-
-
